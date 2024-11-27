@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "time-series-stock-prediction"
+version = "0.1.0"
+description = "Design and Build the LSTM Model"
+authors = ["ghudeihed <ghazi@hudeihed.com>"]
+license = "Apache License"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+tensorflow = "^2.18.0"
+yfinance = "^0.2.50"
+matplotlib = "^3.9.2"
+ipykernel = "^6.29.5"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
