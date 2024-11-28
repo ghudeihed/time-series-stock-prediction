@@ -1,4 +1,4 @@
-tensorflow
+torch
 yfinance
 matplotlib
 ipykernel
