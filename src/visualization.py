@@ -1,131 +1,131 @@
-import os
+# src/visualization.py
+
+import logging
 import matplotlib.pyplot as plt
 import numpy as np
-import logging
-
-from src.utils import load_data
-
-# Set up logging for detailed tracking of progress
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler("project_log.log")  # Log to a file as well
-    ]
-)
-
-def plot_data(data, dates=None, title="Stock Prices", xlabel="Date", ylabel="Price"):
-    """
-    Plot stock data.
-    """
-    plt.figure(figsize=(12, 8))
-    if dates is not None:
-        plt.plot(dates, data, label="Stock Prices", linestyle='-', marker='o', color='teal')
-    else:
-        plt.plot(data, label="Stock Prices", linestyle='-', marker='o', color='teal')
-
-    plt.title(title)
-    plt.xlabel(xlabel)
-    plt.ylabel(ylabel)
-    plt.grid(True, linestyle='--', alpha=0.6)
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
-# Plotting function for stock prices from multiple symbols
-def plot_stock_prices(symbols, data_dir, target_column="Close"):
-    plt.figure(figsize=(14, 8))
-
-    for symbol in symbols:
-        target_column_name = f"{target_column}_{symbol}"
-        data_file_path = os.path.join(data_dir, f"{symbol}_stock_data.parquet")
-        try:
-            # Load the data for each symbol
-            df = load_data(data_file_path)
-
-            if target_column_name not in df.columns:
-                logging.error(f"Column '{target_column_name}' not found in DataFrame for {symbol}")
-                continue
-
-            dates = df.index  # Assuming the DataFrame index is the date
-            prices = df[target_column_name].values
-
-            # Plot the stock prices for the current symbol
-            plt.plot(dates, prices, label=f"{symbol} Prices")
-
-        except Exception as e:
-            logging.error(f"Failed to load or plot data for {symbol}: {e}")
-    
-    # Add plot details
-    plt.title("Stock Prices for Multiple Symbols")
-    plt.xlabel("Date")
-    plt.ylabel("Price")
-    plt.grid(True, linestyle='--', alpha=0.6)
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
-def plot_predictions(y_true, y_pred, dates=None):
-    """
-    Plot true vs predicted stock prices with error visualization.
-    """
-    y_true = y_true.flatten()
-    y_pred = y_pred.flatten()
-
-    plt.figure(figsize=(12, 8))
-
-    if dates is not None:
-        plt.plot(dates, y_true, label="Actual Prices", color="blue", linestyle='-', marker='o')
-        plt.plot(dates, y_pred, label="Predicted Prices", color="orange", linestyle='-', marker='x')
-        plt.fill_between(dates, y_true, y_pred, color='gray', alpha=0.2, label="Prediction Error")
-    else:
-        plt.plot(y_true, label="Actual Prices", color="blue", linestyle='-', marker='o')
-        plt.plot(y_pred, label="Predicted Prices", color="orange", linestyle='-', marker='x')
-        plt.fill_between(range(len(y_true)), y_true, y_pred, color='gray', alpha=0.2, label="Prediction Error")
-
-    plt.title("Actual vs Predicted Stock Prices")
-    plt.xlabel("Time" if dates is None else "Date")
-    plt.ylabel("Price")
-    plt.grid(True, linestyle='--', alpha=0.6)
-    plt.legend()
-    plt.tight_layout()
-    plt.show()
-
 
 def plot_multiple_predictions(y_trues, y_preds, labels, title="Comparison of Predictions", dates=None):
     """
-    Plot multiple true vs predicted stock price series for comparison.
-    """
-    plt.figure(figsize=(12, 8))
-    for i in range(len(y_trues)):
-        if dates is not None:
-            plt.plot(dates, y_trues[i], label=f"Actual {labels[i]}", linestyle='-', color=f"C{i}", marker='o')
-            plt.plot(dates, y_preds[i], label=f"Predicted {labels[i]}", linestyle='--', color=f"C{i}", alpha=0.8, marker='x')
-        else:
-            plt.plot(y_trues[i], label=f"Actual {labels[i]}", linestyle='-', color=f"C{i}", marker='o')
-            plt.plot(y_preds[i], label=f"Predicted {labels[i]}", linestyle='--', color=f"C{i}", alpha=0.8, marker='x')
+    Plots multiple sets of actual vs predicted prices for comparison.
 
+    Args:
+        y_trues (list of np.ndarray): List of actual prices arrays.
+        y_preds (list of np.ndarray): List of predicted prices arrays.
+        labels (list of str): List of labels for each prediction set.
+        title (str): Title of the plot.
+        dates (np.ndarray): Dates corresponding to the prices.
+
+    Returns:
+        None
+    """
+    logging.info("Plotting multiple actual vs predicted prices for comparison.")
+    plt.figure(figsize=(12, 6))
+    for y_true, y_pred, label in zip(y_trues, y_preds, labels):
+        if dates is not None:
+            plt.plot(dates, y_true, label=f'Actual - {label}')
+            plt.plot(dates, y_pred, label=f'Predicted - {label}')
+        else:
+            plt.plot(y_true, label=f'Actual - {label}')
+            plt.plot(y_pred, label=f'Predicted - {label}')
     plt.title(title)
-    plt.xlabel("Date" if dates is not None else "Time")
-    plt.ylabel("Price")
-    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.xlabel('Time')
+    plt.ylabel('Price')
     plt.legend()
-    plt.tight_layout()
     plt.show()
 
-if __name__ == "__main__":
-    # Example usage
-    y_true = np.sin(np.linspace(0, 10, 100))
-    y_pred = y_true + np.random.normal(0, 0.1, 100)
+def plot_data(data, title="Stock Prices", xlabel="Time", ylabel="Price"):
+    """
+    Plots the stock prices.
+
+    Args:
+        data (np.ndarray): Stock prices data.
+        title (str): Title of the plot.
+        xlabel (str): Label for the x-axis.
+        ylabel (str): Label for the y-axis.
+    """
+    logging.info("Plotting stock prices.")
+    plt.figure(figsize=(12, 6))
+    plt.plot(data)
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.show()
+
+def plot_stock_prices(symbols, data_dir, target_column="Adj_Close"):
+    """
+    Plots the stock prices for the given symbols.
+
+    Args:
+        symbols (list): List of stock symbols.
+        data_dir (str): Directory where the stock data files are stored.
+        target_column (str): Column name of the stock prices to plot.
+
+    Returns:
+        None
+    """
+    logging.info("Plotting stock prices for symbols.")
+    plt.figure(figsize=(12, 6))
+    for symbol in symbols:
+        filepath = os.path.join(data_dir, f"{symbol}_stock_data.parquet")
+        df = pd.read_parquet(filepath)
+        plt.plot(df[target_column], label=symbol)
+    plt.title("Stock Prices Over Time")
+    plt.xlabel("Date")
+    plt.ylabel("Price")
+    plt.legend()
+    plt.show()
+
+def plot_predictions(y_true, y_pred, dates=None, title="Actual vs Predicted Prices"):
+    """
+    Plots the actual vs predicted prices.
+
+    Args:
+        y_true (np.ndarray): Actual prices.
+        y_pred (np.ndarray): Predicted prices.
+        dates (np.ndarray): Dates corresponding to the prices.
+        title (str): Title of the plot.
+
+    Returns:
+        None
+    """
+    logging.info("Plotting actual vs predicted prices.")
+    plt.figure(figsize=(10, 6))
+    if dates is not None:
+        plt.plot(dates, y_true, label='Actual')
+        plt.plot(dates, y_pred, label='Predicted')
+    else:
+        plt.plot(y_true, label='Actual')
+        plt.plot(y_pred, label='Predicted')
+    plt.title(title)
+    plt.xlabel('Time')
+    plt.ylabel('Price')
+    plt.legend()
+    plt.show()
+
+
+def plot_final_predictions(last_60_days, future_prices, symbol, sequence_length, pred_steps):
+    """
+    Plots the last 60 days of actual stock prices and the predicted next days.
     
-    # Plotting predictions with error visualization
-    plot_predictions(y_true, y_pred)
+    Args:
+        last_60_days (np.ndarray): Array of the last 60 days of actual prices.
+        future_prices (np.ndarray): Array of predicted future prices.
+        symbol (str): Stock symbol.
+        sequence_length (int): Number of past days used for prediction.
+        pred_steps (int): Number of future days predicted.
+    
+    Returns:
+        None
+    """
+    logging.info("Plotting the final predictions.")
+    plot_prices = np.concatenate((last_60_days, future_prices))
 
-    # Example data for multiple predictions comparison
-    y_trues = [y_true, y_true * 0.8]
-    y_preds = [y_pred, y_true * 0.8 + np.random.normal(0, 0.15, 100)]
-    labels = ["Model 1", "Model 2"]
-
-    # Plotting multiple predictions for comparison
-    plot_multiple_predictions(y_trues, y_preds, labels)
+    plt.figure(figsize=(12, 6))
+    plt.plot(range(sequence_length), last_60_days, label='Last 60 Days')
+    plt.plot(range(sequence_length, sequence_length + pred_steps), future_prices, label='Predicted Next Days', linestyle='--', marker='o')
+    plt.title(f"{symbol} Last {sequence_length} Days and Predicted Next {pred_steps} Days")
+    plt.xlabel('Days')
+    plt.ylabel('Price ($)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
