@@ -1,7 +1,3 @@
-Certainly! Below is a comprehensive Jupyter Notebook that serves as a tutorial for your stock price prediction project. This notebook integrates all the functionalities from your project structure, including data preprocessing, model training with hyperparameter optimization using Optuna, evaluation, and visualization. Each step is thoroughly explained with markdown cells, and the code cells contain detailed comments, docstrings, and logging statements to aid understanding and debugging.
-
----
-
 ## **Stock Price Prediction with LSTM and Hyperparameter Optimization Using Optuna**
 
 ### **Table of Contents**
